@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URL = process.env.MONGO_URL;
 
-const client = new MongoClient(MONGO_URL);
+export const client = new MongoClient(MONGO_URL);
 await client.connect();
 
 app.use(cors());
