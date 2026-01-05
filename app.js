@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 import AuthRouter from "./src/modules/auth/auth.router.js";
 import ChatsRouter from "./src/modules/chats/chats.router.js";
+import UserRouter from "./src/modules/user/user.router.js";
 import ConversationsRouter from "./src/modules/conversations/conversations.router.js";
 
 dotenv.config();
@@ -18,6 +19,7 @@ await client.connect();
 app.use(cors());
 app.use(express.json());
 app.use("/auth", AuthRouter);
+app.use("/user", UserRouter);
 app.use("/chat", ChatsRouter);
 app.use("/conversation", ConversationsRouter);
 

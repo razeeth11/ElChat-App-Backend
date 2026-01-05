@@ -92,11 +92,11 @@ export async function verifyOtpHandler(req, res) {
         newUser: true,
       });
     }
-
-    const data = getUserDataFromMessages(isUserExist._id);
-
-    console.log(data);
-    // res.status(200).json(respones.otpVerifiedSuccess);
+    res.status(200).json({
+      success: true,
+      userId: isUserExist._id,
+      newUser: false,
+    });
   } catch (err) {
     res.status(500).send(respones.internalServerError);
   }
