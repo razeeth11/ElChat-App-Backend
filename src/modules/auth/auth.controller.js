@@ -1,5 +1,9 @@
-import { checkOtp } from "./auth.models.js";
-import { sentOtp, verifyOtp } from "./auth.services.js";
+import { checkOtp, getUserDataFromMessages } from "./auth.models.js";
+import {
+  checkUserExstenceByPhoneNumber,
+  sentOtp,
+  verifyOtp,
+} from "./auth.services.js";
 
 const respones = {
   otpSentSuccess: {
@@ -29,14 +33,17 @@ const respones = {
 };
 
 export async function loginOtpHandler(req, res) {
+  const { phoneNumber } = req.body;
   try {
-    const OTP = Math.floor(100000 + Math.random() * 999999);
-    const isOtpSent = await sentOtp(OTP);
+    const RandomOTP = Math.floor(100000 + Math.random() * 999999);
+    const isOtpSent = await sentOtp(phoneNumber, RandomOTP);
 
     if (!isOtpSent) {
       res.send(respones.otpSentFailure);
       return;
     }
+
+    let OTP = RandomOTP.length > 6 ? RandomOTP.slice(0, 6) : RandomOTP;
 
     res.status(200).json({
       success: true,
@@ -76,7 +83,20 @@ export async function verifyOtpHandler(req, res) {
       });
     }
 
-    res.status(200).json(respones.otpVerifiedSuccess);
+    const isUserExist = await checkUserExstenceByPhoneNumber(req.body);
+
+    if (!isUserExist) {
+      return res.status(200).json({
+        success: true,
+        message: "OTP verified successfully",
+        newUser: true,
+      });
+    }
+
+    const data = getUserDataFromMessages(isUserExist._id);
+
+    console.log(data);
+    // res.status(200).json(respones.otpVerifiedSuccess);
   } catch (err) {
     res.status(500).send(respones.internalServerError);
   }

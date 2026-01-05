@@ -1,13 +1,20 @@
 import dayjs from "dayjs";
 import bcrypt from "bcrypt";
 import * as dotenv from "dotenv";
-import { storedOTPHandler, updateAttempts } from "./auth.models.js";
+import {
+  checkUserInUsersDb,
+  storedOTPHandler,
+  updateAttempts,
+} from "./auth.models.js";
+import { client } from "../../../app.js";
+import { ObjectId } from "mongodb";
 dotenv.config();
 
-export async function sentOtp(OTP) {
+export async function sentOtp(phoneNumber, OTP) {
   const hashedOTP = await bcrypt.hash(OTP.toString(), 10);
 
   const payload = {
+    phoneNumber: phoneNumber,
     otpHash: hashedOTP,
     createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
     expiresAt: dayjs().add(5, "minutes").format("YYYY-MM-DD HH:mm:ss"),
@@ -29,4 +36,8 @@ export async function verifyOtp(body, dbData) {
   }
 
   return 4;
+}
+
+export async function checkUserExstenceByPhoneNumber(data) {
+  const isUserExist = checkUserInUsersDb(data.phoneNumber);
 }
