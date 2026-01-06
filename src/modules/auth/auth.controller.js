@@ -43,7 +43,10 @@ export async function loginOtpHandler(req, res) {
       return;
     }
 
-    let OTP = RandomOTP.length > 6 ? RandomOTP.slice(0, 6) : RandomOTP;
+    let OTP =
+      RandomOTP.toString().length > 6
+        ? RandomOTP.toString().slice(0, 6)
+        : RandomOTP;
 
     res.status(200).json({
       success: true,
