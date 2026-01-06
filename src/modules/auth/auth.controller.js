@@ -52,7 +52,7 @@ export async function loginOtpHandler(req, res) {
       success: true,
       message: "OTP sent successfully",
       authId: isOtpSent.insertedId,
-      OTP: OTP,
+      OTP: Number(OTP),
     });
   } catch (err) {
     res.status(500).send(respones.internalServerError);
