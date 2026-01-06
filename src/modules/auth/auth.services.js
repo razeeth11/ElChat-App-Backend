@@ -39,5 +39,5 @@ export async function verifyOtp(body, dbData) {
 }
 
 export async function checkUserExstenceByPhoneNumber(data) {
-  const isUserExist = checkUserInUsersDb(data.phoneNumber);
+  return checkUserInUsersDb(data.phoneNumber);
 }
