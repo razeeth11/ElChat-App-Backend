@@ -1,7 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
 import * as dotenv from "dotenv";
 import { saveUserToUsers } from "./user.services.js";
-import { getAllUsersFromDb } from "./user.models.js";
+import {
+  getAllUsersFromDb,
+  getSelectedUserDetailsFromDb,
+} from "./user.models.js";
 dotenv.config();
 
 export async function createNewUser(req, res) {
@@ -48,6 +51,24 @@ export async function getAllUsers(req, res) {
       success: true,
       message: "Users fetched successfully",
       users: result,
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ success: false, message: "Internal server error", err });
+  }
+}
+
+export async function getSelectedUserDetails(req, res) {
+  try {
+    const { receiverId } = req.params;
+    const result = await getSelectedUserDetailsFromDb(receiverId);
+
+    res.status(200).json({
+      success: true,
+      message: "User details fetched successfully",
+      userDetails: result,
     });
   } catch (err) {
     console.log(err);
