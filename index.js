@@ -21,7 +21,15 @@ const server = http.createServer(app);
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL;
 export const client = new MongoClient(MONGO_URL);
-await client.connect();
+
+async function connectDB() {
+  try {
+    await client.connect();
+  } catch (err) {
+    process.exit(1);
+  }
+}
+connectDB();
 
 const io = new Server(server, {
   cors: {
