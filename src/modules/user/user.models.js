@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { client } from "../../../app.js";
+import { client } from "../../../index.js";
 
 export async function storeNewUser(userDetails) {
   return await client.db("ElChat").collection("Users").insertOne(userDetails);

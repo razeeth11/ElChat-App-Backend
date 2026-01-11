@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { client } from "../../../app.js";
+import { client } from "../../../index.js";
 
 export async function storedOTPHandler(payload) {
   const result = await client.db("ElChat").collection("OTP").insertOne(payload);

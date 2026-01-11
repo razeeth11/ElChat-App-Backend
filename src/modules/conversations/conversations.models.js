@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { client } from "../../../app.js";
+import { client } from "../../../index.js";
 
 export async function getConversationsByConvoId(conversationId) {
   const result = await client

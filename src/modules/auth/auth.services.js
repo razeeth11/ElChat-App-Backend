@@ -6,7 +6,7 @@ import {
   storedOTPHandler,
   updateAttempts,
 } from "./auth.models.js";
-import { client } from "../../../app.js";
+import { client } from "../../../index.js";
 import { ObjectId } from "mongodb";
 dotenv.config();
 

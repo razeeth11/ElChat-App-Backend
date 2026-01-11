@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { client } from "../../../app.js";
+import { client } from "../../../index.js";
 
 export async function findChat(userIds) {
   const participants = userIds.sort();
