@@ -8,6 +8,11 @@ import UserRouter from "./src/modules/user/user.router.js";
 import ConversationsRouter from "./src/modules/conversations/conversations.router.js";
 import http from "http";
 import { Server } from "socket.io";
+import dayjs from "dayjs";
+import {
+  storeMessageToConversations,
+  updateMessageToChats,
+} from "./src/modules/conversations/conversations.models.js";
 
 dotenv.config();
 
@@ -36,8 +41,35 @@ io.on("connection", (socket) => {
     onlineUsers.set(userId, socket.id);
   });
 
-  socket.on("send-message", (userIds) => {
-    console.log(userIds);
+  socket.on("send-message", async (message) => {
+    const { conversationId, receiverId, senderId, text } = message;
+
+    const payload = {
+      conversationId,
+      receiverId,
+      senderId,
+      text,
+      sendedAt: dayjs().format("YYYY-MM-DD HH:mm"),
+      lastUpdatedAt: dayjs().format("YYYY-MM-DD HH:mm"),
+      isEdited: false,
+      isDeleted: false,
+      isDelivered: false,
+      isSeen: false,
+      reaction: "",
+    };
+
+    await storeMessageToConversations(payload);
+    await updateMessageToChats(payload);
+
+    const receiverSocketId = onlineUsers.get(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receive-message", {
+        conversationId,
+        senderId,
+        text,
+      });
+    }
   });
 });
 
