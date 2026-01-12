@@ -1,9 +1,12 @@
-import { checkOtp, getUserDataFromMessages } from "./auth.models.js";
+import { checkOtp, clearVerifiedOTP } from "./auth.models.js";
 import {
   checkUserExstenceByPhoneNumber,
   sentOtp,
   verifyOtp,
 } from "./auth.services.js";
+import jwt from "jsonwebtoken";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const respones = {
   otpSentSuccess: {
@@ -35,24 +38,22 @@ const respones = {
 export async function loginOtpHandler(req, res) {
   const { phoneNumber } = req.body;
   try {
-    const RandomOTP = Math.floor(100000 + Math.random() * 999999);
-    const isOtpSent = await sentOtp(phoneNumber, RandomOTP);
+    const initialOtp = Math.floor(100000 + Math.random() * 999999).toString();
+    const generatedOtp =
+      initialOtp.length > 6 ? initialOtp.slice(0, 6) : initialOtp;
+
+    const isOtpSent = await sentOtp(phoneNumber, generatedOtp);
 
     if (!isOtpSent) {
       res.send(respones.otpSentFailure);
       return;
     }
 
-    let OTP =
-      RandomOTP.toString().length > 6
-        ? RandomOTP.toString().slice(0, 6)
-        : RandomOTP;
-
     res.status(200).json({
       success: true,
       message: "OTP sent successfully",
       authId: isOtpSent.insertedId,
-      OTP: Number(OTP),
+      OTP: generatedOtp,
     });
   } catch (err) {
     res.status(500).send(respones.internalServerError);
@@ -72,12 +73,12 @@ export async function verifyOtpHandler(req, res) {
     if (isVerified === 1) {
       return res.status(400).send({
         success: false,
-        message: "OTP expired!",
+        message: "OTP expired - Generate a new one!",
       });
     } else if (isVerified === 2) {
       return res.status(400).send({
         success: false,
-        message: "OTP attempts exceeded!",
+        message: "OTP attempts exceeded - Generate a new one!",
       });
     } else if (isVerified === 3) {
       return res.status(400).send({
@@ -95,10 +96,19 @@ export async function verifyOtpHandler(req, res) {
         newUser: true,
       });
     }
+
+    const token = jwt.sign(
+      { userId: isUserExist._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    await clearVerifiedOTP(isExist._id);
     res.status(200).json({
       success: true,
       userId: isUserExist._id,
       newUser: false,
+      token: token,
     });
   } catch (err) {
     res.status(500).send(respones.internalServerError);
