@@ -3,8 +3,11 @@ import * as dotenv from "dotenv";
 import { saveUserToUsers } from "./user.services.js";
 import {
   getAllUsersFromDb,
+  getPhoneNumber,
   getSelectedUserDetailsFromDb,
 } from "./user.models.js";
+import { clearVerifiedOTP } from "../auth/auth.models.js";
+import jwt from "jsonwebtoken";
 dotenv.config();
 
 export async function createNewUser(req, res) {
@@ -15,13 +18,21 @@ export async function createNewUser(req, res) {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-      folder: "avatars",
-    });
+    let avatarUrl = null;
+
+    if (req.file) {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "avatars",
+      });
+      avatarUrl = uploadResult.secure_url;
+    }
+
+    const user = await getPhoneNumber(req.body.authId);
 
     const payload = {
       ...req.body,
-      avatarUrl: uploadResult.secure_url,
+      phoneNumber: user.phoneNumber,
+      avatarUrl,
     };
 
     const isSaved = await saveUserToUsers(payload);
@@ -33,12 +44,22 @@ export async function createNewUser(req, res) {
       });
     }
 
+    const token = jwt.sign(
+      { userId: isSaved.insertedId },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    await clearVerifiedOTP(req.body.authId);
+
     res.status(201).json({
       status: true,
       message: "User saved successfully",
       userId: isSaved.insertedId,
+      token,
     });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Upload failed" });
   }
 }
@@ -53,7 +74,6 @@ export async function getAllUsers(req, res) {
       users: result,
     });
   } catch (err) {
-    console.log(err);
     res
       .status(500)
       .json({ success: false, message: "Internal server error", err });
@@ -71,7 +91,6 @@ export async function getSelectedUserDetails(req, res) {
       userDetails: result,
     });
   } catch (err) {
-    console.log(err);
     res
       .status(500)
       .json({ success: false, message: "Internal server error", err });
