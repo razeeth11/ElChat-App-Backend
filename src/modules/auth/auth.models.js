@@ -37,3 +37,10 @@ export async function getUserDataFromMessages(id) {
     .find({ _id: new ObjectId(id) })
     .toArray();
 }
+
+export async function clearVerifiedOTP(authId) {
+  return await client
+    .db("ElChat")
+    .collection("OTP")
+    .deleteOne({ _id: new ObjectId(authId) });
+}
