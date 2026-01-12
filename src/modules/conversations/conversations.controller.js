@@ -5,7 +5,6 @@ export async function getConversations(req, res) {
     const { conversationId } = req.params;
 
     const allConversations = await getConversationsByConvoId(conversationId);
-    console.log(allConversations);
     res.status(200).json({ success: true, conversations: allConversations });
   } catch (err) {
     res.status(500).json({ success: false, message: "Internal server error" });

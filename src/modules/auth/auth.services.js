@@ -11,7 +11,7 @@ import { ObjectId } from "mongodb";
 dotenv.config();
 
 export async function sentOtp(phoneNumber, OTP) {
-  const hashedOTP = await bcrypt.hash(OTP.toString(), 10);
+  const hashedOTP = await bcrypt.hash(OTP, 10);
 
   const payload = {
     phoneNumber: phoneNumber,

@@ -15,3 +15,10 @@ export async function getSelectedUserDetailsFromDb(receiverId) {
     .collection("Users")
     .findOne({ _id: new ObjectId(receiverId) });
 }
+
+export async function getPhoneNumber(authId) {
+  return await client
+    .db("ElChat")
+    .collection("OTP")
+    .findOne({ _id: new ObjectId(authId) });
+}
