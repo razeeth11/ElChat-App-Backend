@@ -31,6 +31,13 @@ async function connectDB() {
 }
 connectDB();
 
+app.use(
+  cors({
+    origin: "http://localhost:5173", // replace with frontend URL later
+    credentials: true,
+  })
+);
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -57,8 +64,8 @@ io.on("connection", (socket) => {
       receiverId,
       senderId,
       text,
-      sendedAt: dayjs().format("YYYY-MM-DD HH:mm"),
-      lastUpdatedAt: dayjs().format("YYYY-MM-DD HH:mm"),
+      sendedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      lastUpdatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       isEdited: false,
       isDeleted: false,
       isDelivered: false,

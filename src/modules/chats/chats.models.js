@@ -18,18 +18,19 @@ export async function createNewChat(userIds) {
       senderId: userIds[0],
       receiverId: userIds[1],
       lastMessage: "",
-      createdAt: dayjs().format("YYYY-MM-DD HH:mm"),
-      lastUpdatedAt: dayjs().format("YYYY-MM-DD HH:mm"),
+      createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      lastUpdatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
     });
 }
 
-export async function getSenderChats(senderId) {
+export async function getSenderChats(userId) {
   return client
     .db("ElChat")
     .collection("Messages")
     .find({
-      senderId,
+      $or: [{ senderId: userId }, { receiverId: userId }],
       lastMessage: { $exists: true, $ne: "" },
     })
+    .sort({ lastUpdatedAt: -1 })
     .toArray();
 }

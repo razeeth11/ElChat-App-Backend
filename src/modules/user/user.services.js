@@ -6,8 +6,8 @@ export async function saveUserToUsers(payload) {
     ...payload,
     lastSeenAt: null,
     accountStatus: null,
-    createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-    updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+    createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss:ss"),
+    updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss:ss"),
   };
 
   return storeNewUser(userDetails);

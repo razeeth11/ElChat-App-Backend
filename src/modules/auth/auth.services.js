@@ -16,8 +16,8 @@ export async function sentOtp(phoneNumber, OTP) {
   const payload = {
     phoneNumber: phoneNumber,
     otpHash: hashedOTP,
-    createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-    expiresAt: dayjs().add(5, "minutes").format("YYYY-MM-DD HH:mm:ss"),
+    createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss:ss"),
+    expiresAt: dayjs().add(5, "minutes").format("YYYY-MM-DD HH:mm:ss:ss"),
     attempts: 3,
   };
 
@@ -26,7 +26,7 @@ export async function sentOtp(phoneNumber, OTP) {
 
 export async function verifyOtp(body, dbData) {
   let isMatch = await bcrypt.compare(body.otp, dbData.otpHash);
-  if (dayjs().format("YYYY-MM-DD HH:mm:ss") > dbData.expiresAt) {
+  if (dayjs().format("YYYY-MM-DD HH:mm:ss:ss") > dbData.expiresAt) {
     return 1;
   } else if (dbData.attempts === 0) {
     return 2;
