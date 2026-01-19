@@ -33,14 +33,14 @@ connectDB();
 
 app.use(
   cors({
-    origin: "https://el-chat-app-frontend-4u2i.vercel.app", // replace with frontend URL later
+    origin: process.env.URL,
     credentials: true,
   })
 );
 
 const io = new Server(server, {
   cors: {
-    origin: "https://el-chat-app-frontend-4u2i.vercel.app",
+    origin: process.env.URL,
     methods: ["GET", "POST"],
   },
 });
