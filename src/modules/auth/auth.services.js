@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import * as dotenv from "dotenv";
 import {
   checkUserInUsersDb,
+  getRateLimitByPhoneNumber,
   storedOTPHandler,
   updateAttempts,
 } from "./auth.models.js";
@@ -10,11 +11,18 @@ import { client } from "../../../index.js";
 import { ObjectId } from "mongodb";
 dotenv.config();
 
+export async function checkRateLimitByPhoneNumber(phoneNumber) {
+  const isPhoneNumberExist = await getRateLimitByPhoneNumber(phoneNumber);
+
+  // if (!isPhoneNumberExist) {}
+}
+
 export async function sentOtp(phoneNumber, OTP) {
   const hashedOTP = await bcrypt.hash(OTP, 10);
+  const hashedPhone = await bcrypt.hash(phoneNumber, 10);
 
   const payload = {
-    phoneNumber: phoneNumber,
+    phoneNumber: hashedPhone,
     otpHash: hashedOTP,
     createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss:ss"),
     expiresAt: dayjs().add(5, "minutes").format("YYYY-MM-DD HH:mm:ss:ss"),

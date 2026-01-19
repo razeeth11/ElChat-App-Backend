@@ -1,6 +1,14 @@
 import { ObjectId } from "mongodb";
 import { client } from "../../../index.js";
 
+export async function getRateLimitByPhoneNumber(phoneNumber) {
+  const result = await client
+    .db("ElChat")
+    .collection("PhoneRateLimit")
+    .findOne({ phoneNumber: phoneNumber });
+  return result;
+}
+
 export async function storedOTPHandler(payload) {
   const result = await client.db("ElChat").collection("OTP").insertOne(payload);
   return result;
