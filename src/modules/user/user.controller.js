@@ -96,3 +96,20 @@ export async function getSelectedUserDetails(req, res) {
       .json({ success: false, message: "Internal server error", err });
   }
 }
+
+export async function getUserByUserId(req, res) {
+  try {
+    const { userId } = req.params;
+    const result = await getSelectedUserDetailsFromDb(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "User details fetched successfully",
+      userDetails: result,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Internal server error", err });
+  }
+}
