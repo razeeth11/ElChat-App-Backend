@@ -3,19 +3,12 @@ import bcrypt from "bcrypt";
 import * as dotenv from "dotenv";
 import {
   checkUserInUsersDb,
-  getRateLimitByPhoneNumber,
   storedOTPHandler,
   updateAttempts,
 } from "./auth.models.js";
 import { client } from "../../../index.js";
 import { ObjectId } from "mongodb";
 dotenv.config();
-
-export async function checkRateLimitByPhoneNumber(phoneNumber) {
-  const isPhoneNumberExist = await getRateLimitByPhoneNumber(phoneNumber);
-
-  // if (!isPhoneNumberExist) {}
-}
 
 export async function sentOtp(phoneNumber, OTP) {
   const hashedOTP = await bcrypt.hash(OTP, 10);

@@ -1,6 +1,5 @@
 import { checkOtp, clearVerifiedOTP } from "./auth.models.js";
 import {
-  checkRateLimitByPhoneNumber,
   checkUserExstenceByPhoneNumber,
   sentOtp,
   verifyOtp,
@@ -50,27 +49,23 @@ export async function loginOtpHandler(req, res) {
       });
     }
 
-    const isPhoneRateLimitExceeded = await checkRateLimitByPhoneNumber(
-      phoneNumber
-    );
+    const initialOtp = Math.floor(100000 + Math.random() * 999999).toString();
+    const generatedOtp =
+      initialOtp.length > 6 ? initialOtp.slice(0, 6) : initialOtp;
 
-    // const initialOtp = Math.floor(100000 + Math.random() * 999999).toString();
-    // const generatedOtp =
-    //   initialOtp.length > 6 ? initialOtp.slice(0, 6) : initialOtp;
+    const isOtpSent = await sentOtp(phoneNumber, generatedOtp);
 
-    // const isOtpSent = await sentOtp(phoneNumber, generatedOtp);
+    if (!isOtpSent) {
+      res.send(respones.otpSentFailure);
+      return;
+    }
 
-    // if (!isOtpSent) {
-    //   res.send(respones.otpSentFailure);
-    //   return;
-    // }
-
-    // res.status(200).json({
-    //   success: true,
-    //   message: "OTP sent successfully",
-    //   authId: isOtpSent.insertedId,
-    //   OTP: generatedOtp,
-    // });
+    res.status(200).json({
+      success: true,
+      message: "OTP sent successfully",
+      authId: isOtpSent.insertedId,
+      OTP: generatedOtp,
+    });
   } catch (err) {
     res.status(500).send(respones.internalServerError);
   }
