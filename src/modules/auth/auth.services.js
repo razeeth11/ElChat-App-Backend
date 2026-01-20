@@ -12,10 +12,9 @@ dotenv.config();
 
 export async function sentOtp(phoneNumber, OTP) {
   const hashedOTP = await bcrypt.hash(OTP, 10);
-  const hashedPhone = await bcrypt.hash(phoneNumber, 10);
 
   const payload = {
-    phoneNumber: hashedPhone,
+    phoneNumber,
     otpHash: hashedOTP,
     createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss:ss"),
     expiresAt: dayjs().add(5, "minutes").format("YYYY-MM-DD HH:mm:ss:ss"),
